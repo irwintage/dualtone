@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>DualTone — Chrysasynth</title>
+<meta name="theme-color" content="#060818">
+<link rel="manifest" href="./manifest.json">
+<style>
+@font-face {
+  font-family: 'Cinzel';
+  src: url('./fonts/cinzel-v26-latin-regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Cinzel';
+  src: url('./fonts/cinzel-v26-latin-500.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('./fonts/inter-v20-latin-300.woff2') format('woff2');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('./fonts/inter-v20-latin-regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('./fonts/inter-v20-latin-500.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+</style>
+<style>
+:root{
+  --ca:#E060FF;--cb:#48CFFF;
+  --t1:#EDF4FF;--t2:#A8BDD8;--t3:#506070;
+  --panel:rgba(14,18,40,0.55);--stroke:rgba(255,255,255,0.07);--stroke2:rgba(255,255,255,0.04);
+  --fd:'Cinzel',serif;--fu:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%;overflow-x:hidden}
+body{
+  font-family:var(--fu);color:var(--t1);
+  background:
+    radial-gradient(ellipse 70% 45% at 10% 0%,rgba(224,96,255,0.10),transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 5%,rgba(72,207,255,0.09),transparent 50%),
+    radial-gradient(ellipse 80% 50% at 50% 110%,rgba(120,80,255,0.06),transparent 55%),
+    linear-gradient(180deg,#060818 0%,#020510 100%);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:max(24px,env(safe-area-inset-top)) 14px max(32px,env(safe-area-inset-bottom));
+}
+
+/* ── GATE ── */
+.gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse 70% 50% at 50% 30%,rgba(160,80,255,0.07),transparent 60%),rgba(6,8,24,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.gate.hidden{display:none}
+.gate-card{width:min(100%,320px);background:linear-gradient(145deg,rgba(14,18,42,0.98),rgba(10,13,32,0.98));border:1px solid rgba(255,255,255,0.09);border-radius:24px;padding:32px 24px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.05)}
+.gate-brand{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:#C38CFF;opacity:0.75;margin-bottom:16px}
+.gate-orbs{width:80px;height:54px;margin:0 auto 20px;position:relative}
+.gate-orb-a,.gate-orb-b{position:absolute;width:44px;height:44px;border-radius:50%;filter:blur(2px)}
+.gate-orb-a{left:0;top:5px;background:radial-gradient(circle at 40% 35%,rgba(255,150,255,0.9),rgba(200,60,255,0.7) 55%,rgba(140,40,200,0.3));box-shadow:0 0 20px rgba(200,80,255,0.4)}
+.gate-orb-b{right:0;top:5px;background:radial-gradient(circle at 40% 35%,rgba(160,230,255,0.95),rgba(60,180,255,0.75) 55%,rgba(30,120,200,0.3));box-shadow:0 0 20px rgba(72,207,255,0.4)}
+.gate-title{font-family:var(--fd);font-size:26px;font-weight:500;letter-spacing:0.12em;color:var(--t1);margin-bottom:8px}
+.gate-sub{font-size:12px;color:var(--t3);line-height:1.6;margin-bottom:24px}
+.gate-btn{width:100%;min-height:46px;border:none;border-radius:13px;cursor:pointer;font-family:var(--fu);font-size:13px;font-weight:500;letter-spacing:0.04em;color:#060818;background:linear-gradient(135deg,var(--ca),#a060ff 50%,var(--cb));box-shadow:0 8px 24px rgba(160,80,255,0.25),inset 0 1px 0 rgba(255,255,255,0.25);transition:transform 80ms}
+.gate-btn:active{transform:scale(0.97)}
+
+/* ── APP ── */
+.app{width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 2px}
+.brand{font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:#C38CFF;opacity:0.65}
+.title{font-family:var(--fd);font-size:22px;font-weight:500;letter-spacing:0.14em;background:linear-gradient(135deg,var(--ca),#c080ff,var(--cb));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:0 12px;height:27px;border-radius:999px;border:1px solid var(--stroke);background:rgba(14,18,40,0.7);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);transition:all 200ms}
+.pill.on{color:#a080ff;border-color:rgba(160,128,255,0.25);background:rgba(160,80,255,0.08)}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all 200ms}
+.pill.on .dot{background:#c080ff;box-shadow:0 0 8px rgba(192,128,255,0.7)}
+
+/* ── CROSSFADER PANEL ── */
+.xf-panel{background:rgba(10,12,30,0.82);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:14px 16px 16px;position:relative;overflow:hidden}
+.xf-panel::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(224,96,255,0.05),transparent 50%,rgba(72,207,255,0.05));pointer-events:none}
+
+/* Source buttons */
+.xf-sources{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.src-btn{
+  flex:1;display:flex;align-items:center;gap:10px;
+  padding:9px 11px;border-radius:13px;cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all 180ms;position:relative;
+  -webkit-user-select:none;user-select:none;
+}
+.src-btn.src-right{flex-direction:row-reverse}
+.src-btn.src-right .src-info{text-align:right}
+
+/* idle */
+.src-btn{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)}
+
+/* active mode — glowing border */
+.src-btn.mode-a{border-color:rgba(224,96,255,0.55);background:rgba(224,96,255,0.07);box-shadow:0 0 0 1px rgba(224,96,255,0.15)}
+.src-btn.mode-b{border-color:rgba(72,207,255,0.55);background:rgba(72,207,255,0.07);box-shadow:0 0 0 1px rgba(72,207,255,0.15)}
+
+/* mode label badge */
+.src-btn::after{
+  content:'TAP TO SELECT';position:absolute;
+  bottom:-8px;left:50%;transform:translateX(-50%);
+  font-size:7px;letter-spacing:0.14em;white-space:nowrap;
+  opacity:0;transition:opacity 200ms;
+}
+.src-btn.mode-a::after{color:var(--ca);opacity:0.7}
+.src-btn.mode-b::after{color:var(--cb);opacity:0.7}
+
+.src-orb{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:box-shadow 300ms}
+.src-orb.a{background:radial-gradient(circle at 38% 32%,rgba(255,160,255,0.9),rgba(200,60,255,0.75) 55%,rgba(140,40,200,0.2));box-shadow:0 0 16px rgba(200,80,255,0.3)}
+.src-orb.b{background:radial-gradient(circle at 38% 32%,rgba(180,240,255,0.95),rgba(60,190,255,0.78) 55%,rgba(30,120,200,0.2));box-shadow:0 0 16px rgba(72,207,255,0.3)}
+.src-btn.mode-a .src-orb.a{box-shadow:0 0 24px rgba(224,96,255,0.55),0 0 48px rgba(224,96,255,0.2)}
+.src-btn.mode-b .src-orb.b{box-shadow:0 0 24px rgba(72,207,255,0.55),0 0 48px rgba(72,207,255,0.2)}
+.src-orb svg{width:17px;height:17px}
+.src-orb.a svg{color:rgba(255,220,255,0.9)}
+.src-orb.b svg{color:rgba(200,245,255,0.9)}
+
+.src-info{flex:1;min-width:0}
+.src-lbl{font-size:8px;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:2px}
+.src-lbl.a{color:var(--ca);opacity:0.75}
+.src-lbl.b{color:var(--cb);opacity:0.75}
+.src-name{font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.src-var{font-size:10px;color:var(--t3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* xf divider */
+.xf-divider{display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.xf-divider span{font-size:9px;color:var(--t3);opacity:0.5;letter-spacing:0.05em}
+
+/* Track */
+.xf-track{position:relative;height:36px;display:flex;align-items:center}
+.xf-rail{width:100%;height:4px;border-radius:999px;position:relative}
+.xf-rail-bg{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,0.07)}
+.xf-fill-a{position:absolute;top:0;left:0;height:100%;border-radius:999px;background:linear-gradient(90deg,rgba(224,96,255,0.7),rgba(224,96,255,0.08))}
+.xf-fill-b{position:absolute;top:0;right:0;height:100%;border-radius:999px;background:linear-gradient(270deg,rgba(72,207,255,0.7),rgba(72,207,255,0.08))}
+#xf-input{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;height:36px;appearance:none;margin:0;z-index:10}
+.xf-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 38% 32%,#fff 0%,#d0b0ff 38%,#8060d0 100%);border:2px solid rgba(255,255,255,0.28);box-shadow:0 0 0 3px rgba(6,8,24,0.9),0 0 16px rgba(180,120,255,0.5)}
+.xf-labels{display:flex;justify-content:space-between;margin-top:6px}
+.xf-lab{font-size:8px;letter-spacing:0.12em;text-transform:uppercase}
+.xf-lab.a{color:var(--ca);opacity:0.6}
+.xf-lab.b{color:var(--cb);opacity:0.6}
+.xf-lab.mid{color:var(--t3);opacity:0.45;transition:all 150ms}
+
+/* ── MODE HINT ── */
+.mode-hint{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:28px;border-radius:10px;
+  font-size:10px;font-weight:500;letter-spacing:0.06em;
+  transition:all 200ms;
+  opacity:0;
+}
+.mode-hint.visible{opacity:1}
+.mode-hint.hint-a{color:var(--ca);background:rgba(224,96,255,0.08);border:1px solid rgba(224,96,255,0.18)}
+.mode-hint.hint-b{color:var(--cb);background:rgba(72,207,255,0.08);border:1px solid rgba(72,207,255,0.18)}
+.hint-dot{width:6px;height:6px;border-radius:50%;animation:blink 1.1s ease-in-out infinite}
+.mode-hint.hint-a .hint-dot{background:var(--ca)}
+.mode-hint.hint-b .hint-dot{background:var(--cb)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── SECTION ── */
+.sec{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--t3);padding:2px 2px 0;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--stroke2)}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+
+/* ── CARD ── */
+.card{
+  position:relative;border-radius:15px;border:1.5px solid var(--stroke);background:var(--panel);
+  padding:15px 8px 11px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  cursor:pointer;overflow:hidden;
+  transition:border-color 180ms,background 180ms,transform 90ms,box-shadow 200ms;
+  -webkit-user-select:none;user-select:none;
+}
+.card::before{content:'';position:absolute;inset:0;border-radius:15px;opacity:0;transition:opacity 280ms;pointer-events:none}
+.card:active{transform:scale(0.95)}
+
+/* selected states */
+.card.sel-a{border-color:rgba(224,96,255,0.45);background:rgba(40,8,55,0.80)}
+.card.sel-b{border-color:rgba(72,207,255,0.45);background:rgba(8,30,55,0.80)}
+.card.sel-a::before{opacity:1;background:radial-gradient(circle at 50% 20%,rgba(224,96,255,0.13),transparent 70%)}
+.card.sel-b::before{opacity:1;background:radial-gradient(circle at 50% 20%,rgba(72,207,255,0.13),transparent 70%)}
+.card.sel-a::after,.card.sel-b::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;animation:shimmer 2.6s ease-in-out infinite}
+.card.sel-a::after{background:linear-gradient(90deg,transparent,rgba(224,96,255,0.65),transparent)}
+.card.sel-b::after{background:linear-gradient(90deg,transparent,rgba(72,207,255,0.65),transparent)}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+
+/* hover in selection mode */
+.card.hover-a{border-color:rgba(224,96,255,0.28);background:rgba(224,96,255,0.05)}
+.card.hover-b{border-color:rgba(72,207,255,0.28);background:rgba(72,207,255,0.05)}
+
+/* badge A / B */
+.badge{
+  position:absolute;top:6px;right:6px;
+  width:18px;height:18px;border-radius:50%;
+  font-size:8px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 200ms,transform 200ms;transform:scale(0.6);
+}
+.card.sel-a .badge-a{opacity:1;transform:scale(1);background:rgba(224,96,255,0.22);color:var(--ca);border:1px solid rgba(224,96,255,0.5)}
+.card.sel-b .badge-b{opacity:1;transform:scale(1);background:rgba(72,207,255,0.22);color:var(--cb);border:1px solid rgba(72,207,255,0.5)}
+
+/* icon bubble */
+.c-icon{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;transition:transform 200ms,box-shadow 200ms,border-color 200ms;position:relative}
+.c-icon svg{width:24px;height:24px}
+.card.sel-a .c-icon{transform:scale(1.06);border-color:rgba(224,96,255,0.32);box-shadow:0 0 16px rgba(224,96,255,0.22)}
+.card.sel-b .c-icon{transform:scale(1.06);border-color:rgba(72,207,255,0.32);box-shadow:0 0 16px rgba(72,207,255,0.22)}
+.card.sel-a .c-icon::after{content:'';position:absolute;inset:-6px;border-radius:20px;border:1px solid rgba(224,96,255,0.3);animation:pulse 2.2s ease-in-out infinite}
+.card.sel-b .c-icon::after{content:'';position:absolute;inset:-6px;border-radius:20px;border:1px solid rgba(72,207,255,0.3);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.7;transform:scale(1)}50%{opacity:0.1;transform:scale(1.1)}}
+
+.c-name{font-size:10px;font-weight:500;color:var(--t2);text-align:center;line-height:1.25;transition:color 180ms}
+.card.sel-a .c-name,.card.sel-b .c-name{color:var(--t1)}
+.c-dots{display:flex;gap:4px}
+.c-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.12);transition:background 200ms,transform 200ms}
+.card.sel-a .c-dot.on{background:var(--ca);transform:scale(1.4)}
+.card.sel-b .c-dot.on{background:var(--cb);transform:scale(1.4)}
+
+.footer{text-align:center;font-size:8px;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);opacity:0.35;padding:4px 0 2px}
+
+@media(max-width:380px){
+  .grid{gap:7px}.card{padding:12px 6px 9px;border-radius:13px}
+  .c-icon{width:44px;height:44px;border-radius:12px}.c-icon svg{width:20px;height:20px}.c-name{font-size:9px}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG SYMBOLS -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="ic-ambient"  viewBox="0 0 24 24"><path d="M2 12Q5 8 8 12Q11 16 14 12Q17 8 20 12Q22 14 23 12" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M2 17Q5 13 8 17Q11 21 14 17Q17 13 20 17" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4"/><path d="M2 7Q5 5 8 7Q11 9 14 7Q17 5 20 7" stroke="currentColor" stroke-width="0.8" fill="none" stroke-linecap="round" opacity="0.2"/></symbol>
+  <symbol id="ic-harmonic" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="3.5" stroke="currentColor" stroke-width="1.3" fill="none"/><ellipse cx="12" cy="12" rx="9" ry="3.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.3" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.5" fill="currentColor" opacity="0.8"/></symbol>
+  <symbol id="ic-pad"      viewBox="0 0 24 24"><path d="M3 12C6 6 9 9 12 12C15 15 18 9 21 12" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M3 15C6 9 9 12 12 15C15 18 18 12 21 15" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4"/></symbol>
+  <symbol id="ic-rain"     viewBox="0 0 24 24"><path d="M6 10Q7.5 5 9 10Q9 13.5 7.5 13.5Q6 13.5 6 10Z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M14 7Q15.5 2 17 7Q17 10.5 15.5 10.5Q14 10.5 14 7Z" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="5" y1="16" x2="4" y2="20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/><line x1="9" y1="15" x2="8" y2="19" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/><line x1="13" y1="16" x2="12" y2="20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/><line x1="17" y1="14" x2="16" y2="18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.38"/></symbol>
+  <symbol id="ic-wind"     viewBox="0 0 24 24"><path d="M3 9Q8 9 11 9Q14 9 14 7Q14 5 12 5Q10 5 10 7" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M3 12Q10 12 15 12Q18 12 18 10Q18 8 16 8" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M3 15Q9 15 13 15Q16 15 16 17Q16 19 14 19Q12 19 12 17" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="ic-cave"     viewBox="0 0 24 24"><path d="M3 19L3 11Q3 4 12 4Q21 4 21 11L21 19" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><line x1="9" y1="12" x2="9" y2="16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/><line x1="12" y1="10" x2="12" y2="15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/><line x1="15" y1="12" x2="15" y2="16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/><circle cx="12" cy="16.5" r="1" fill="currentColor" opacity="0.45"/></symbol>
+  <!-- Living Textures: fire/spark shape -->
+  <symbol id="ic-living"   viewBox="0 0 24 24"><path d="M12 21C7.5 21 4.5 17.5 4.5 14C4.5 10.5 7 8.5 8.5 7C8.5 9 9.5 10 10.5 10C10 8 10.5 5 12.5 3C12.5 5.5 14 7 15 9.5C15.5 8 15.5 6.5 15 5.5C17.5 7 19.5 10.5 19.5 14C19.5 17.5 16.5 21 12 21Z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M12 18C10 18 9 16.5 9 15C9 13.5 10 12.5 11 12C11 13 12 13.5 12.5 13C12 12 12.5 10.5 13.5 10C13.5 11.5 14.5 12.5 14.5 14C15 13 15 12 14.5 11.5C16 12.5 16 14 16 15C16 16.5 14.5 18 12 18Z" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.45"/></symbol>
+  <symbol id="ic-granular" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="8" cy="9" r="1" fill="currentColor" opacity="0.7"/><circle cx="16" cy="9" r="1" fill="currentColor" opacity="0.7"/><circle cx="7" cy="14" r="0.8" fill="currentColor" opacity="0.5"/><circle cx="17" cy="14" r="0.8" fill="currentColor" opacity="0.5"/><circle cx="12" cy="7" r="0.8" fill="currentColor" opacity="0.6"/><circle cx="12" cy="17" r="0.8" fill="currentColor" opacity="0.6"/><circle cx="9" cy="11" r="0.6" fill="currentColor" opacity="0.38"/><circle cx="15" cy="11" r="0.6" fill="currentColor" opacity="0.38"/><circle cx="5" cy="12" r="0.5" fill="currentColor" opacity="0.22"/><circle cx="19" cy="12" r="0.5" fill="currentColor" opacity="0.22"/></symbol>
+  <symbol id="ic-metal"    viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M8 5Q5 8 5 12Q5 18 8 19L16 19Q19 18 19 12Q19 8 16 5Z" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M10 19Q12 21.5 14 19" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M8 12Q12 10 16 12" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.42"/></symbol>
+  <symbol id="ic-chakra"   viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M12 9.5Q10 7 12 5Q14 7 12 9.5Z" stroke="currentColor" stroke-width="1" fill="none"/><path d="M14.5 10.5Q17 9 18.5 11Q16 13 14.5 10.5Z" stroke="currentColor" stroke-width="1" fill="none"/><path d="M14.5 13.5Q16 16 14 18Q12 16 14.5 13.5Z" stroke="currentColor" stroke-width="1" fill="none"/><path d="M11.5 13.5Q10 16 8 18Q9.5 15 11.5 13.5Z" stroke="currentColor" stroke-width="1" fill="none"/><path d="M9.5 10.5Q7 9 5.5 11Q8 13 9.5 10.5Z" stroke="currentColor" stroke-width="1" fill="none"/></symbol>
+  <symbol id="ic-freqs"    viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.35"/><circle cx="12" cy="12" r="5.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"/><path d="M9 12L10.5 9L12 15L13.5 10L15 12" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-binaural" viewBox="0 0 24 24"><path d="M6 15L6 12Q6 5 12 5Q18 5 18 12L18 15" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><rect x="4" y="14" width="4" height="6" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="16" y="14" width="4" height="6" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9 12Q12 10 15 12" stroke="currentColor" stroke-width="0.9" fill="none" opacity="0.38"/></symbol>
+</svg>
+
+<!-- GATE -->
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <div class="gate-brand">Chrysasynth · Wellness</div>
+    <div class="gate-orbs"><div class="gate-orb-a"></div><div class="gate-orb-b"></div></div>
+    <div class="gate-title">DUALTONE</div>
+    <div class="gate-sub">Two sounds. One space.<br>Tap to activate audio.</div>
+    <button id="gate-btn" class="gate-btn">Enable Audio</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+  <div class="hdr">
+    <div><div class="brand">Chrysasynth · Wellness</div><div class="title">DUALTONE</div></div>
+    <div class="pill" id="pill"><div class="dot"></div><span id="pill-txt">Silence</span></div>
+  </div>
+
+  <!-- CROSSFADER -->
+  <div class="xf-panel">
+    <div class="xf-sources">
+      <!-- A -->
+      <div class="src-btn" id="src-a">
+        <div class="src-orb a" id="orb-a">
+          <svg viewBox="0 0 24 24" fill="none"><use href="#ic-ambient"/></svg>
+        </div>
+        <div class="src-info">
+          <div class="src-lbl a">Source A</div>
+          <div class="src-name" id="src-a-name">Ambient Drone</div>
+          <div class="src-var"  id="src-a-var">Soft Haze</div>
+        </div>
+      </div>
+      <div class="xf-divider"><span>⇄</span></div>
+      <!-- B -->
+      <div class="src-btn src-right" id="src-b">
+        <div class="src-orb b" id="orb-b">
+          <svg viewBox="0 0 24 24" fill="none"><use href="#ic-rain"/></svg>
+        </div>
+        <div class="src-info">
+          <div class="src-lbl b">Source B</div>
+          <div class="src-name" id="src-b-name">Soft Rain</div>
+          <div class="src-var"  id="src-b-var">Light Drizzle</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crossfader track -->
+    <div class="xf-track">
+      <div class="xf-rail">
+        <div class="xf-rail-bg"></div>
+        <div class="xf-fill-a" id="fill-a" style="width:50%"></div>
+        <div class="xf-fill-b" id="fill-b" style="width:50%"></div>
+      </div>
+      <div class="xf-thumb" id="xf-thumb" style="left:50%"></div>
+      <input type="range" id="xf-input" min="0" max="100" value="50">
+    </div>
+    <div class="xf-labels">
+      <span class="xf-lab a">A</span>
+      <span class="xf-lab mid" id="xf-mid">50 / 50</span>
+      <span class="xf-lab b">B</span>
+    </div>
+  </div>
+
+  <!-- MODE HINT -->
+  <div class="mode-hint" id="mode-hint">
+    <div class="hint-dot"></div>
+    <span id="hint-txt">Tap a sound to assign it to Source A</span>
+  </div>
+
+  <!-- GRIDS -->
+  <div class="sec">Atmospheres</div><div class="grid" id="g-atmo"></div>
+  <div class="sec">Nature</div><div class="grid" id="g-nature"></div>
+  <div class="sec">Textures</div><div class="grid" id="g-texture"></div>
+  <div class="sec">Sacred</div><div class="grid" id="g-sacred"></div>
+
+  <div class="footer">Chrysasynth · DualTone · Wellness</div>
+</div>
+
+<script src="./Tone.js"></script>
+<script>
+// ════════════════════════════════════════
+// DATA — 12 cards exactly
+// ════════════════════════════════════════
+const CATS={
+  atmo:[
+    {id:'ambient', name:'Ambient Drone',    icon:'ic-ambient',  color:'#E060FF', variants:['Soft Haze','Far Veil','Celestial Echo']},
+    {id:'harmonic',name:'Harmonic Drone',   icon:'ic-harmonic', color:'#C38CFF', variants:['Pure Fifth','Deep Octave','Open Triad']},
+    {id:'pad',     name:'Synth Pad',        icon:'ic-pad',      color:'#9BC8FF', variants:['Warm Pad','Cold Pad','Ethereal Pad']},
+  ],
+  nature:[
+    {id:'rain', name:'Soft Rain',     icon:'ic-rain',  color:'#48CFFF', variants:['Light Drizzle','Summer Rain','Deep Shower']},
+    {id:'wind', name:'Mountain Wind', icon:'ic-wind',  color:'#B0E8D0', variants:['Gentle Breeze','Deep Wind','Distant Gust']},
+    {id:'cave', name:'Deep Cave',     icon:'ic-cave',  color:'#8EF2FF', variants:['Low Resonance','Wet Echo','Mineral Breath']},
+  ],
+  texture:[
+    {id:'living',   name:'Living Textures', icon:'ic-living',   color:'#F2A65A', variants:['Fire','Underwater','Thunder']},
+    {id:'granular', name:'Granular Texture',icon:'ic-granular', color:'#66D19E', variants:['Fine Grains','Slow Grains','Sound Dust']},
+    {id:'metal',    name:'Metal Resonance', icon:'ic-metal',    color:'#F2D45A', variants:['Tibetan Bowl','Deep Bell','Wind Chime']},
+  ],
+  sacred:[
+    {id:'chakra',   name:'Chakra Tone',        icon:'ic-chakra',   color:'#D56A7A', variants:['Root 396Hz','Heart 341Hz','Crown 172Hz']},
+    {id:'freqs',    name:'Sacred Frequencies', icon:'ic-freqs',    color:'#F2A65A', variants:['528 Hz','396 Hz','432 Hz']},
+    {id:'binaural', name:'Binaural Beat',       icon:'ic-binaural', color:'#9C7BFF', variants:['Delta 2Hz','Theta 6Hz','Alpha 10Hz']},
+  ]
+}
+const ALL=[...CATS.atmo,...CATS.nature,...CATS.texture,...CATS.sacred]
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let ready=false
+let masterA=null,masterB=null
+let nodesA=[],nodesB=[]
+let xfVal=50
+let activeMode=null // 'a' | 'b' | null
+
+const sel={ a:{id:'ambient',var:0}, b:{id:'rain',var:0} }
+
+function getMA(){if(!masterA)masterA=new Tone.Volume(-10).toDestination();return masterA}
+function getMB(){if(!masterB)masterB=new Tone.Volume(-10).toDestination();return masterB}
+
+function stopNodes(arr){
+  arr.forEach(n=>{try{n.stop&&n.stop()}catch(e){}})
+  arr.forEach(n=>{try{n.dispose&&n.dispose()}catch(e){}})
+  arr.length=0
+}
+function applyXfade(){
+  if(!ready)return
+  const t=xfVal/100
+  const dbA=20*Math.log10(Math.max(0.001,Math.cos(t*Math.PI/2)))-4
+  const dbB=20*Math.log10(Math.max(0.001,Math.cos((1-t)*Math.PI/2)))-4
+  if(masterA)masterA.volume.rampTo(dbA,0.08)
+  if(masterB)masterB.volume.rampTo(dbB,0.08)
+}
+
+// ════════════════════════════════════════
+// AUDIO BUILDERS
+// ════════════════════════════════════════
+function mkRev(d,w,dst){const r=new Tone.Reverb({decay:d,wet:w});r.connect(dst);return r}
+function mkFlt(t,f,Q,dst){const fl=new Tone.Filter({type:t,frequency:f,Q});fl.connect(dst);return fl}
+function mkOsc(f,t,v,dst,fi=0){
+  const o=new Tone.Oscillator({frequency:f,type:t})
+  o.volume.value=fi>0?-80:v;o.connect(dst);o.start()
+  if(fi>0)o.volume.rampTo(v,fi)
+  return o
+}
+function mkNoise(t,v,dst,fi=0){
+  const n=new Tone.Noise(t)
+  n.volume.value=fi>0?-80:v;n.connect(dst);n.start()
+  if(fi>0)n.volume.rampTo(v,fi)
+  return n
+}
+function mkLFO(f,mn,mx,tgt){const l=new Tone.LFO({frequency:f,min:mn,max:mx});l.connect(tgt);l.start();return l}
+
+function buildAmbient(v,dst,arr){
+  const freqs=[[80,120,160],[60,90,120],[100,150,200]][v]
+  const r=mkRev(12,0.7,dst);arr.push(r)
+  freqs.forEach((fr,i)=>{
+    const o=mkOsc(fr,'sine',-18-i*4,r)
+    arr.push(o,mkLFO(0.07+i*0.02,fr*0.997,fr*1.003,o.frequency))
+  })
+}
+function buildHarmonic(v,dst,arr){
+  const root=[55,65,48][v],rat=[[1,1.5,2,3],[1,2,2.5,4],[1,1.333,2,2.667]][v]
+  const r=mkRev(10,0.65,dst);arr.push(r)
+  rat.forEach((ratio,i)=>arr.push(mkOsc(root*ratio,i===0?'sine':'triangle',-14-i*5,r)))
+}
+function buildPad(v,dst,arr){
+  const cfg=[{f:110,t:'sawtooth'},{f:82,t:'square'},{f:130,t:'sine'}][v]
+  const r=mkRev(14,0.65,dst),fl=mkFlt('lowpass',400,0.7,r)
+  arr.push(r,fl,mkLFO(0.14,280,580,fl.frequency))
+  for(let i=0;i<3;i++)arr.push(mkOsc(cfg.f*(1+i*0.003),cfg.t,-20,fl))
+}
+function buildRain(v,dst,arr){
+  const nt=['white','pink','brown'][v],fr=[2200,1100,550][v]
+  const r=mkRev(5,[0.38,0.58,0.72][v],dst),fl=mkFlt('lowpass',fr,0.5,r)
+  arr.push(r,fl,mkNoise(nt,[-22,-20,-18][v],fl))
+}
+function buildWind(v,dst,arr){
+  const fr=[750,280,130][v]
+  const r=mkRev(8,0.5,dst),fl=mkFlt('bandpass',fr,0.4,r)
+  arr.push(r,fl,mkLFO(0.09,fr*0.65,fr*1.35,fl.frequency),mkNoise('pink',[-24,-20,-18][v],fl))
+}
+function buildCave(v,dst,arr){
+  const fr=[58,44,78][v],r=mkRev(18,0.85,dst),fl=mkFlt('lowpass',180,1.1,r)
+  arr.push(r,fl,mkNoise('brown',-30,fl),mkOsc(fr,'sine',-26,r))
+}
+
+// ── LIVING TEXTURES ──────────────────────
+function buildLiving(v,dst,arr){
+  if(v===0){
+    // FIRE — crépitement via bursts aléatoires de bruit très court
+    const r=mkRev(3,0.3,dst)
+    const fl=mkFlt('bandpass',900,1.8,r)
+    const fl2=mkFlt('lowpass',600,0.6,r)
+    arr.push(r,fl,fl2)
+    // base : brown noise grave et doux
+    arr.push(mkNoise('brown',-28,fl2))
+    // crépitement : env + noise répété irrégulièrement
+    const crackle=()=>{
+      const env=new Tone.AmplitudeEnvelope({attack:0.001,decay:0.04+Math.random()*0.06,sustain:0,release:0.02})
+      const n=new Tone.Noise('pink');n.volume.value=-18
+      n.connect(env);env.connect(fl)
+      n.start();env.triggerAttack()
+      setTimeout(()=>{try{env.triggerRelease();setTimeout(()=>{try{n.stop();n.dispose();env.dispose()}catch(e){}},200)}catch(e){}},80+Math.random()*120)
+    }
+    crackle()
+    const id=setInterval(()=>{
+      const count=1+Math.floor(Math.random()*3)
+      for(let i=0;i<count;i++) setTimeout(crackle,i*60+Math.random()*80)
+    },180+Math.random()*220)
+    arr.push({dispose:()=>clearInterval(id)})
+  } else if(v===1){
+    // UNDERWATER — basses + filtre passe-bas très fermé, LFO très lent
+    const r=mkRev(14,0.82,dst)
+    const fl=mkFlt('lowpass',280,1.4,r)
+    arr.push(r,fl,mkLFO(0.05,180,380,fl.frequency))
+    arr.push(mkNoise('brown',-20,fl,3))
+    arr.push(mkOsc(55,'sine',-28,r,2),mkOsc(75,'sine',-34,r,2))
+  } else {
+    // THUNDER — grondement sourd lointain, très lent, pas agressif
+    const r=mkRev(16,0.88,dst)
+    const fl=mkFlt('lowpass',220,0.8,r)
+    const fl2=mkFlt('lowpass',80,0.6,r)
+    arr.push(r,fl,fl2)
+    arr.push(mkNoise('brown',-26,fl,4))
+    arr.push(mkOsc(42,'sine',-30,r,3),mkOsc(55,'sine',-36,r,3))
+    // rumble lfo très lent
+    const lfo=mkLFO(0.04,140,260,fl.frequency);arr.push(lfo)
+  }
+}
+
+// ── GRANULAR — fade-in 3s, variantes douces ──
+function buildGranular(v,dst,arr){
+  const sets=[[180,280,420],[70,110,150],[130,190,260]][v]
+  const r=mkRev(10,0.7,dst);arr.push(r)
+  sets.forEach((f,i)=>{
+    const o=mkOsc(f,'sine',-28,r,3)
+    arr.push(o,mkLFO(0.22+i*0.08,-34,-22,o.volume))
+  })
+}
+function buildMetal(v,dst,arr){
+  const cfg=[{f:432,d:6},{f:256,d:10},{f:528,d:4}][v]
+  const r=mkRev(cfg.d,0.75,dst);arr.push(r)
+  ;[1,2.756,5.404].forEach((ratio,i)=>{
+    const o=new Tone.Oscillator({frequency:cfg.f*ratio,type:'sine'})
+    const env=new Tone.AmplitudeEnvelope({attack:0.001,decay:cfg.d*(0.75-i*0.18),sustain:0,release:0.4})
+    o.connect(env);env.connect(r);o.volume.value=-12-i*7;o.start()
+    const fire=()=>env.triggerAttackRelease(cfg.d*(0.65-i*0.12));fire()
+    const id=setInterval(fire,3200+i*500)
+    arr.push(o,env,{dispose:()=>clearInterval(id)})
+  })
+}
+function buildChakra(v,dst,arr){
+  const base=[396,341,172][v],r=mkRev(10,0.65,dst);arr.push(r)
+  ;[1,2,3].forEach((ratio,i)=>arr.push(mkOsc(base*ratio,i===0?'sine':'triangle',-14-i*8,r)))
+}
+function buildFreqs(v,dst,arr){
+  const base=[528,396,432][v],r=mkRev(12,0.6,dst);arr.push(r)
+  arr.push(mkOsc(base,'sine',-16,r),mkOsc(base*2,'sine',-24,r),mkOsc(base*3,'sine',-32,r))
+}
+function buildBinaural(v,dst,arr){
+  const beat=[2,6,10][v]
+  const mg=new Tone.Merge();mg.connect(dst)
+  const oL=new Tone.Oscillator({frequency:200,type:'sine'})
+  const oR=new Tone.Oscillator({frequency:200+beat,type:'sine'})
+  oL.connect(mg,0,0);oR.connect(mg,0,1)
+  oL.volume.value=oR.volume.value=-18;oL.start();oR.start()
+  arr.push(oL,oR,mg)
+}
+
+function dispatch(id,v,dst,arr){
+  const map={ambient:buildAmbient,harmonic:buildHarmonic,pad:buildPad,rain:buildRain,wind:buildWind,cave:buildCave,living:buildLiving,granular:buildGranular,metal:buildMetal,chakra:buildChakra,freqs:buildFreqs,binaural:buildBinaural}
+  if(map[id])map[id](v,dst,arr)
+}
+function buildA(){stopNodes(nodesA);dispatch(sel.a.id,sel.a.var,getMA(),nodesA);applyXfade();updatePill()}
+function buildB(){stopNodes(nodesB);dispatch(sel.b.id,sel.b.var,getMB(),nodesB);applyXfade();updatePill()}
+
+// ════════════════════════════════════════
+// CROSSFADER UI
+// ════════════════════════════════════════
+document.getElementById('xf-input').addEventListener('input',function(){
+  xfVal=parseInt(this.value)
+  document.getElementById('xf-thumb').style.left=xfVal+'%'
+  document.getElementById('fill-a').style.width=xfVal+'%'
+  document.getElementById('fill-b').style.width=(100-xfVal)+'%'
+  const a=Math.round(100-xfVal),b=Math.round(xfVal)
+  document.getElementById('xf-mid').textContent=a===b?'50 / 50':`${a} / ${b}`
+  applyXfade()
+})
+
+// ════════════════════════════════════════
+// NAVIGATION — orbe tap → active mode
+// ════════════════════════════════════════
+function setMode(m){
+  // toggle
+  activeMode = activeMode===m ? null : m
+  document.getElementById('src-a').classList.toggle('mode-a', activeMode==='a')
+  document.getElementById('src-b').classList.toggle('mode-b', activeMode==='b')
+  const hint=document.getElementById('mode-hint')
+  const txt=document.getElementById('hint-txt')
+  if(activeMode){
+    hint.className=`mode-hint visible hint-${activeMode}`
+    txt.textContent=`Tap a sound to assign it to Source ${activeMode.toUpperCase()}`
+  } else {
+    hint.className='mode-hint'
+  }
+  // hover feedback on cards
+  document.querySelectorAll('.card').forEach(c=>{
+    c.classList.remove('hover-a','hover-b')
+  })
+}
+
+document.getElementById('src-a').addEventListener('click',()=>setMode('a'))
+document.getElementById('src-b').addEventListener('click',()=>setMode('b'))
+
+// ════════════════════════════════════════
+// GRIDS
+// ════════════════════════════════════════
+function mkSVG(id,color){return`<svg width="24" height="24" viewBox="0 0 24 24" style="color:${color}"><use href="#${id}"/></svg>`}
+
+function renderGrid(cid,sounds){
+  const wrap=document.getElementById(cid)
+  sounds.forEach(s=>{
+    const c=document.createElement('div');c.className='card';c.dataset.id=s.id
+    const dots=s.variants.map((_,i)=>`<div class="c-dot${i===0?' on':''}" data-i="${i}"></div>`).join('')
+    c.innerHTML=`<div class="badge badge-a">A</div><div class="badge badge-b">B</div><div class="c-icon">${mkSVG(s.icon,s.color)}</div><div class="c-name">${s.name}</div><div class="c-dots">${dots}</div>`
+    c.addEventListener('click',()=>onCard(s.id))
+    wrap.appendChild(c)
+  })
+}
+renderGrid('g-atmo',   CATS.atmo)
+renderGrid('g-nature', CATS.nature)
+renderGrid('g-texture',CATS.texture)
+renderGrid('g-sacred', CATS.sacred)
+
+function onCard(id){
+  if(!ready)return
+  if(activeMode){
+    // assign to active source
+    const which=activeMode
+    sel[which].id=id; sel[which].var=0
+    updateHeader(which)
+    updateGrid()
+    which==='a'?buildA():buildB()
+    setMode(null) // close mode after selection
+  } else {
+    // if already selected, cycle variant
+    if(sel.a.id===id){
+      const s=ALL.find(x=>x.id===id);sel.a.var=(sel.a.var+1)%s.variants.length
+      updateHeader('a');updateGrid();buildA()
+    } else if(sel.b.id===id){
+      const s=ALL.find(x=>x.id===id);sel.b.var=(sel.b.var+1)%s.variants.length
+      updateHeader('b');updateGrid();buildB()
+    } else {
+      // not selected — activate A mode and assign immediately
+      sel.a.id=id;sel.a.var=0
+      updateHeader('a');updateGrid();buildA()
+    }
+  }
+}
+
+function updateGrid(){
+  document.querySelectorAll('.card').forEach(c=>{
+    const id=c.dataset.id
+    c.classList.toggle('sel-a',id===sel.a.id)
+    c.classList.toggle('sel-b',id===sel.b.id)
+    if(id===sel.a.id) c.querySelectorAll('.c-dot').forEach((d,i)=>d.classList.toggle('on',i===sel.a.var))
+    else if(id===sel.b.id) c.querySelectorAll('.c-dot').forEach((d,i)=>d.classList.toggle('on',i===sel.b.var))
+    else c.querySelectorAll('.c-dot').forEach((d,i)=>d.classList.toggle('on',i===0))
+  })
+}
+
+function updateHeader(which){
+  const s=ALL.find(x=>x.id===sel[which].id);if(!s)return
+  document.getElementById(`src-${which}-name`).textContent=s.name
+  document.getElementById(`src-${which}-var`).textContent=s.variants[sel[which].var]
+  const orb=document.getElementById(`orb-${which}`)
+  const c=which==='a'?'rgba(255,220,255,0.9)':'rgba(200,245,255,0.9)'
+  orb.innerHTML=`<svg viewBox="0 0 24 24" fill="none" style="width:17px;height:17px;color:${c}"><use href="#${s.icon}"/></svg>`
+}
+
+function updatePill(){
+  const on=nodesA.length>0||nodesB.length>0
+  document.getElementById('pill').classList.toggle('on',on)
+  document.getElementById('pill-txt').textContent=on?'Playing':'Silence'
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+updateHeader('a');updateHeader('b');updateGrid()
+
+document.getElementById('gate-btn').addEventListener('click',async()=>{
+  try{
+    await Tone.start();getMA();getMB();ready=true
+    document.getElementById('gate').classList.add('hidden')
+    buildA();buildB()
+  }catch(e){console.error(e)}
+})
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+  }
+</script>
+</body>
+</html>
