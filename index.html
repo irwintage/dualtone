@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>DualTone — Chrysasynth</title>
-<meta name="theme-color" content="#060818">
+<meta name="theme-color" content="#0d0f12">
 <link rel="manifest" href="./manifest.json">
 <style>
 @font-face {
@@ -230,6 +231,165 @@ body{
   .c-icon{width:44px;height:44px;border-radius:12px}.c-icon svg{width:20px;height:20px}.c-name{font-size:9px}
 }
 </style>
+<style>
+/* DUALTONE V2 */
+:root{--ca:#d05cff;--cb:#54d9ff;--t1:#f4f6fb;--t2:rgba(244,246,251,.72);--t3:rgba(244,246,251,.42);--panel:rgba(255,255,255,.026);--stroke:rgba(255,255,255,.075);--stroke2:rgba(255,255,255,.045)}
+html{min-height:100%;background:#0d0f12;color-scheme:dark;overscroll-behavior:none}
+body{min-height:100vh;min-height:100dvh;background:#0d0f12;padding:max(16px,env(safe-area-inset-top)) 14px max(22px,env(safe-area-inset-bottom));overscroll-behavior:none}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(circle at 18% 13%,rgba(208,92,255,.075),transparent 27%),radial-gradient(circle at 82% 18%,rgba(84,217,255,.065),transparent 28%),linear-gradient(180deg,#111318 0%,#0d0f12 52%,#090a0d 100%)}
+.app{max-width:460px;gap:12px}.brand{color:var(--t3);opacity:1;letter-spacing:.19em}.title{margin-top:3px;color:var(--t1);background:none;-webkit-text-fill-color:initial;font-size:23px;letter-spacing:.08em}.pill{height:26px;padding:0 10px;background:rgba(255,255,255,.028);color:var(--t3);border-color:var(--stroke)}
+.gate{align-items:stretch;justify-content:stretch;padding:max(24px,env(safe-area-inset-top)) 20px max(30px,env(safe-area-inset-bottom));background:radial-gradient(circle at 30% 40%,rgba(208,92,255,.09),transparent 25%),radial-gradient(circle at 70% 48%,rgba(84,217,255,.085),transparent 27%),linear-gradient(180deg,#111318 0%,#0d0f12 58%,#090a0d 100%);backdrop-filter:none;-webkit-backdrop-filter:none}
+.gate-card{width:100%;max-width:420px;margin:0 auto;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;display:grid;grid-template-rows:auto 1fr auto auto auto;align-items:center;text-align:center}.gate-brand{align-self:start;margin:0;padding-top:2px;font-size:9px;letter-spacing:.22em;color:var(--t3);opacity:1}.gate-orbs{width:220px;height:180px;margin:0 auto;align-self:end;position:relative}.gate-orb-a,.gate-orb-b{width:108px;height:108px;top:34px;filter:none;border:1px solid rgba(255,255,255,.07);animation:dualtoneFloat 5s ease-in-out infinite}.gate-orb-a{left:18px;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.42),transparent 12%),radial-gradient(circle at 40% 38%,#e98cff 0%,#c54fff 48%,#7b2696 100%);box-shadow:0 0 40px rgba(208,92,255,.24),inset 0 -18px 28px rgba(0,0,0,.25)}.gate-orb-b{right:18px;animation-delay:-2.4s;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.46),transparent 12%),radial-gradient(circle at 40% 38%,#8cecff 0%,#4ccfff 48%,#1b6f9e 100%);box-shadow:0 0 40px rgba(84,217,255,.22),inset 0 -18px 28px rgba(0,0,0,.24)}@keyframes dualtoneFloat{50%{transform:translateY(-7px) scale(1.025)}}.gate-title{margin:4px 0 8px;font-size:28px;letter-spacing:.08em;color:var(--t1)}.gate-sub{margin:0 0 26px;font-size:11px;line-height:1.55;color:var(--t3)}.gate-btn{justify-self:center;width:auto;min-width:176px;min-height:45px;padding:0 24px;border-radius:999px;border:1px solid rgba(255,255,255,.11);background:#f1f3f6;color:#111318;box-shadow:0 10px 28px rgba(0,0,0,.28);font-size:11px;letter-spacing:.09em;text-transform:uppercase}
+.xf-panel{padding:12px 13px 13px;border-radius:18px;background:rgba(255,255,255,.022);border-color:rgba(255,255,255,.055);box-shadow:none}.xf-panel::before{background:linear-gradient(115deg,rgba(208,92,255,.045),transparent 45%,rgba(84,217,255,.04))}.xf-sources{gap:7px;margin-bottom:12px}.src-btn{min-width:0;padding:8px 9px;gap:8px;border-width:1px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.025)}.src-btn::after{display:none}.src-btn.mode-a{border-color:rgba(208,92,255,.38);background:rgba(208,92,255,.055);box-shadow:0 0 18px rgba(208,92,255,.07)}.src-btn.mode-b{border-color:rgba(84,217,255,.38);background:rgba(84,217,255,.05);box-shadow:0 0 18px rgba(84,217,255,.07)}.src-orb{width:37px;height:37px}.src-name{font-size:11px;line-height:1.12;white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.src-var{font-size:9px;margin-top:2px}.xf-track{height:34px}.xf-thumb{width:24px;height:24px;background:radial-gradient(circle at 38% 32%,#fff 0%,#e7e0ff 35%,#8e72ca 100%);border:2px solid rgba(255,255,255,.18);box-shadow:0 0 0 3px rgba(13,15,18,.92),0 0 14px rgba(166,120,255,.34)}
+.mode-hint{min-height:26px;border-radius:999px;font-size:9px}.sec{padding-top:3px;color:rgba(244,246,251,.34);letter-spacing:.17em}.grid{gap:8px}.card{border-radius:16px;border-width:1px;background:rgba(255,255,255,.022);padding:13px 7px 10px;gap:7px;transition:border-color 220ms ease,background 220ms ease,transform 120ms ease,box-shadow 260ms ease}.card:active{transform:scale(.975)}.card.sel-a{border-color:rgba(208,92,255,.34);background:rgba(208,92,255,.045);box-shadow:0 0 20px rgba(208,92,255,.055)}.card.sel-b{border-color:rgba(84,217,255,.34);background:rgba(84,217,255,.042);box-shadow:0 0 20px rgba(84,217,255,.05)}.card.sel-a::after,.card.sel-b::after{display:none}.c-icon{width:47px;height:47px;border-radius:14px;background:rgba(255,255,255,.026);border-color:rgba(255,255,255,.055)}.c-icon svg{color:rgba(244,246,251,.56)!important;transition:color 220ms ease,transform 220ms ease}.card.sel-a .c-icon svg{color:#e59cff!important}.card.sel-b .c-icon svg{color:#8cecff!important}.card.sel-a .c-icon::after,.card.sel-b .c-icon::after{display:none}.c-name{font-size:10px;line-height:1.22;min-height:24px;display:flex;align-items:center;justify-content:center}.footer{color:rgba(244,246,251,.24);opacity:1}
+@media(max-width:380px){body{padding-left:12px;padding-right:12px}.app{gap:10px}.grid{gap:7px}.card{padding:11px 5px 9px}.c-icon{width:43px;height:43px}.c-name{font-size:9px}.src-btn{padding:7px;gap:6px}.src-orb{width:34px;height:34px}.src-name{font-size:10px}.src-var{font-size:8px}.gate-orbs{transform:scale(.92)}}
+</style>
+<style>
+
+/* ============================================================
+   DUALTONE V2.1 — GLASS ENTRY CARD
+   ============================================================ */
+
+/* Let the actual app become the visual background of the gate */
+.gate{
+  padding:
+    max(18px,env(safe-area-inset-top))
+    18px
+    max(18px,env(safe-area-inset-bottom));
+  align-items:center;
+  justify-content:center;
+  background:rgba(7,9,12,.46);
+  backdrop-filter:blur(14px) saturate(.72);
+  -webkit-backdrop-filter:blur(14px) saturate(.72);
+}
+
+/* subtle vignette over the blurred application */
+.gate::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(255,255,255,.018),transparent 30%),
+    linear-gradient(180deg,rgba(5,6,8,.18),rgba(5,6,8,.42));
+}
+
+/* Remove the old two-ball visual completely */
+.gate-orbs{
+  display:none !important;
+}
+
+.gate-card{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:min(88vw,330px);
+  min-height:270px;
+  margin:0;
+  padding:30px 26px 28px;
+  border:1px solid rgba(255,255,255,.085);
+  border-radius:24px;
+  background:
+    linear-gradient(145deg,rgba(25,27,32,.82),rgba(12,14,18,.78));
+  box-shadow:
+    0 24px 70px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.045);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+  text-align:center;
+}
+
+.gate-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 18% 10%,rgba(208,92,255,.055),transparent 34%),
+    radial-gradient(circle at 82% 88%,rgba(84,217,255,.045),transparent 34%);
+}
+
+.gate-brand,
+.gate-title,
+.gate-sub,
+.gate-btn{
+  position:relative;
+  z-index:1;
+}
+
+.gate-brand{
+  padding:0;
+  margin:0 0 26px;
+  color:rgba(244,246,251,.38);
+  font-size:8px;
+  font-weight:500;
+  letter-spacing:.22em;
+}
+
+.gate-title{
+  margin:0 0 8px;
+  font-family:var(--fd);
+  font-size:25px;
+  font-weight:500;
+  line-height:1;
+  letter-spacing:.075em;
+  color:var(--t1);
+}
+
+.gate-sub{
+  margin:0 0 28px;
+  color:rgba(244,246,251,.45);
+  font-size:10px;
+  line-height:1.55;
+}
+
+.gate-btn{
+  min-width:170px;
+  min-height:44px;
+  margin:0;
+  padding:0 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:#f1f3f6;
+  color:#111318;
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.7);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .12s ease,background .18s ease;
+}
+
+.gate-btn:active{
+  transform:scale(.985);
+}
+
+@media(max-width:380px){
+  .gate-card{
+    width:min(90vw,310px);
+    min-height:250px;
+    padding:27px 22px 25px;
+    border-radius:22px;
+  }
+
+  .gate-brand{
+    margin-bottom:23px;
+  }
+
+  .gate-sub{
+    margin-bottom:25px;
+  }
+}
+
+</style>
 </head>
 <body>
 
@@ -256,7 +416,7 @@ body{
     <div class="gate-brand">Chrysasynth · Wellness</div>
     <div class="gate-orbs"><div class="gate-orb-a"></div><div class="gate-orb-b"></div></div>
     <div class="gate-title">DUALTONE</div>
-    <div class="gate-sub">Two sounds. One space.<br>Tap to activate audio.</div>
+    <div class="gate-sub">Two sounds. One space.<br>Blend a world between them.</div>
     <button id="gate-btn" class="gate-btn">Enable Audio</button>
   </div>
 </div>
@@ -483,14 +643,237 @@ function buildLiving(v,dst,arr){
   }
 }
 
-// ── GRANULAR — fade-in 3s, variantes douces ──
-function buildGranular(v,dst,arr){
-  const sets=[[180,280,420],[70,110,150],[130,190,260]][v]
-  const r=mkRev(10,0.7,dst);arr.push(r)
-  sets.forEach((f,i)=>{
-    const o=mkOsc(f,'sine',-28,r,3)
-    arr.push(o,mkLFO(0.22+i*0.08,-34,-22,o.volume))
-  })
+// ── GRANULAR TEXTURE — tonal / harmonic grains ──
+function buildGranular(v, dst, arr){
+
+  const configs = [
+
+    // 0 — Fine Grains
+    {
+      root: 110,
+      ratios: [1, 1.5, 2, 2.5, 3, 4],
+      wave: "sine",
+      grainMin: 0.07,
+      grainMax: 0.18,
+      gapMin: 90,
+      gapMax: 260,
+      volume: -29,
+      pan: 0.72,
+      detune: 10,
+      reverbDecay: 6,
+      reverbWet: 0.62,
+      filter: 2400
+    },
+
+    // 1 — Slow Grains
+    {
+      root: 82.5,
+      ratios: [1, 1.25, 1.5, 2, 2.5],
+      wave: "triangle",
+      grainMin: 0.45,
+      grainMax: 1.2,
+      gapMin: 380,
+      gapMax: 950,
+      volume: -28,
+      pan: 0.48,
+      detune: 7,
+      reverbDecay: 9,
+      reverbWet: 0.72,
+      filter: 1500
+    },
+
+    // 2 — Sound Dust
+    {
+      root: 165,
+      ratios: [1, 1.5, 2, 3, 4, 6],
+      wave: "sine",
+      grainMin: 0.035,
+      grainMax: 0.12,
+      gapMin: 130,
+      gapMax: 420,
+      volume: -33,
+      pan: 0.90,
+      detune: 16,
+      reverbDecay: 11,
+      reverbWet: 0.82,
+      filter: 3800
+    }
+
+  ];
+
+  const cfg = configs[v] || configs[0];
+
+  const rand = (min, max) =>
+    min + Math.random() * (max - min);
+
+  const pick = array =>
+    array[Math.floor(Math.random() * array.length)];
+
+  // ── FX BUS ──────────────────────────────
+
+  const reverb = new Tone.Reverb({
+    decay: cfg.reverbDecay,
+    wet: cfg.reverbWet
+  });
+
+  reverb.connect(dst);
+  arr.push(reverb);
+
+  const filter = new Tone.Filter({
+    type: "lowpass",
+    frequency: cfg.filter,
+    Q: 0.35
+  });
+
+  filter.connect(reverb);
+  arr.push(filter);
+
+  // Global fade-in to avoid abrupt appearance
+  const bus = new Tone.Gain(0);
+
+  bus.connect(filter);
+  bus.gain.rampTo(0.85, 2.2);
+
+  arr.push(bus);
+
+
+  // ── GRAIN ENGINE ────────────────────────
+
+  let stopped = false;
+  let nextTimer = null;
+
+  const activeGrains = new Set();
+
+
+  function spawnGrain(){
+
+    if(stopped) return;
+
+    const ratio = pick(cfg.ratios);
+
+    // Harmonically related frequency
+    const frequency = cfg.root * ratio;
+
+    const duration = rand(
+      cfg.grainMin,
+      cfg.grainMax
+    );
+
+    const osc = new Tone.Oscillator({
+      frequency,
+      type: cfg.wave,
+      detune: rand(
+        -cfg.detune,
+        cfg.detune
+      )
+    });
+
+    osc.volume.value = cfg.volume;
+
+    const env = new Tone.AmplitudeEnvelope({
+
+      // no click, but still granular
+      attack: Math.max(
+        0.008,
+        duration * 0.18
+      ),
+
+      decay: duration * 0.42,
+
+      sustain: v === 1 ? 0.20 : 0.05,
+
+      release: duration * 0.55
+
+    });
+
+    const pan = new Tone.Panner(
+      rand(-cfg.pan, cfg.pan)
+    );
+
+
+    osc.connect(env);
+    env.connect(pan);
+    pan.connect(bus);
+
+    osc.start();
+
+    env.triggerAttackRelease(duration);
+
+
+    const grain = {
+      osc,
+      env,
+      pan,
+      timer:null
+    };
+
+    activeGrains.add(grain);
+
+
+    grain.timer = setTimeout(() => {
+
+      try{
+        osc.stop();
+        osc.dispose();
+        env.dispose();
+        pan.dispose();
+      }catch(e){}
+
+      activeGrains.delete(grain);
+
+    }, (duration + 0.8) * 1000);
+
+
+    // Slightly irregular density
+    nextTimer = setTimeout(
+      spawnGrain,
+      rand(
+        cfg.gapMin,
+        cfg.gapMax
+      )
+    );
+  }
+
+
+  // Give the texture a gentle entrance
+  nextTimer = setTimeout(
+    spawnGrain,
+    400
+  );
+
+
+  // ── CLEANUP ─────────────────────────────
+
+  arr.push({
+
+    dispose(){
+
+      stopped = true;
+
+      if(nextTimer){
+        clearTimeout(nextTimer);
+        nextTimer = null;
+      }
+
+      activeGrains.forEach(grain => {
+
+        clearTimeout(grain.timer);
+
+        try{
+          grain.osc.stop();
+          grain.osc.dispose();
+          grain.env.dispose();
+          grain.pan.dispose();
+        }catch(e){}
+
+      });
+
+      activeGrains.clear();
+
+    }
+
+  });
+
 }
 function buildMetal(v,dst,arr){
   const cfg=[{f:432,d:6},{f:256,d:10},{f:528,d:4}][v]
