@@ -3,9 +3,10 @@
 // Chrysasynth PWA · Offline Support
 // ═══════════════════════════════════════════════
 
-const CACHE_NAME = 'dualtone-v1'
+const CACHE_NAME = 'dualtone-v2';
 
 const ASSETS = [
+  './',
   './index.html',
   './manifest.json',
   './Tone.js',
@@ -16,53 +17,81 @@ const ASSETS = [
   './fonts/inter-v20-latin-500.woff2',
   './icon-192.png',
   './icon-512.png'
-]
+];
 
-// ── INSTALL : cache tous les assets ──
+// INSTALL
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS)
-    }).then(() => self.skipWaiting())
-  )
-})
+    caches
+      .open(CACHE_NAME)
+      .then(cache => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
+  );
+});
 
-// ── ACTIVATE : supprime les anciens caches ──
+// ACTIVATE
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
+    caches
+      .keys()
+      .then(keys =>
+        Promise.all(
+          keys
+            .filter(key => key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+        )
       )
-    ).then(() => self.clients.claim())
-  )
-})
+      .then(() => self.clients.claim())
+  );
+});
 
-// ── FETCH : cache first, fallback network ──
+// FETCH
 self.addEventListener('fetch', event => {
-  // ignorer les requêtes non-GET
-  if (event.request.method !== 'GET') return
+  const url = new URL(event.request.url);
+
+  // Ignore non-GET requests
+  if (event.request.method !== 'GET') return;
+
+  // Ignore chrome-extension://, blob:, data:, etc.
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
 
   event.respondWith(
     caches.match(event.request).then(cached => {
-      if (cached) return cached
+      if (cached) {
+        return cached;
+      }
 
-      return fetch(event.request).then(response => {
-        // ne pas cacher les réponses invalides
-        if (!response || response.status !== 200 || response.type === 'opaque') {
-          return response
-        }
-        const clone = response.clone()
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone))
-        return response
-      }).catch(() => {
-        // offline fallback : retourner index.html pour les navigations
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html')
-        }
-      })
+      return fetch(event.request)
+        .then(response => {
+          // Don't cache invalid responses
+          if (
+            !response ||
+            response.status !== 200 ||
+            response.type === 'opaque'
+          ) {
+            return response;
+          }
+
+          const clone = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, clone).catch(error => {
+              console.warn(
+                '[DualTone SW] cache.put failed:',
+                event.request.url,
+                error
+              );
+            });
+          });
+
+          return response;
+        })
+        .catch(() => {
+          // Offline fallback for page navigation
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
     })
-  )
-})
+  );
+});
