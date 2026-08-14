@@ -1,12 +1,12 @@
 {
-  "name": "DualTone — Chrysasynth",
+  "name": "DualTone \u2014 Chrysasynth",
   "short_name": "DualTone",
   "description": "Two sounds. One space. A dual-source wellness soundscape by Chrysasynth.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#060818",
-  "theme_color": "#060818",
+  "background_color": "#0d0f12",
+  "theme_color": "#0d0f12",
   "icons": [
     {
       "src": "icon-192.png",
@@ -21,6 +21,10 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["music", "health", "lifestyle"],
+  "categories": [
+    "music",
+    "health",
+    "lifestyle"
+  ],
   "lang": "en"
 }
